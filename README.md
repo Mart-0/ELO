@@ -1,5 +1,6 @@
 # ELO
-Dit is een userscript ELO<br/>
+Dit is een alternatief voor de standaard Windesheim ELO leeromgeving<br/>
+Om dit modelijk te maken is een userscript gebruikt.<br/>
 Een userscript is een javascipt bestand wat een bestaande site kan wijzigen.<br/>
 Dit userscript herschrijft de gehele windesheim ELO.
 <br/><br/>
