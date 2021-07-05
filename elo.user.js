@@ -325,7 +325,6 @@ const App = {
 
         // check is countent is a link some items that have: content.OPEN_IN_NEW_WINDOW can vbe opened in a iframe
         isLink(content) {
-            if (content.OPEN_IN_NEW_WINDOW === 0) return false
             try {
                 return window.location.hostname.split('.')[1] !== (new URL(content.URL)).hostname.split('.')[1]
             } catch (e) {
