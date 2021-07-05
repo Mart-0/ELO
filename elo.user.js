@@ -5,8 +5,8 @@
 // @author        Mart Groothuis
 // @license       MIT
 
-// @downloadURL   https://github.com/Mart-0/ELO/raw/master/ELO.user.js
-// @updateURL     https://github.com/Mart-0/ELO/raw/master/ELO.user.js
+// @downloadURL   https://github.com/Mart-0/ELO/raw/master/elo.user.js
+// @updateURL     https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @supportURL    https://github.com/Mart-0/ELO/issues
 // @version       1.0.0
 
