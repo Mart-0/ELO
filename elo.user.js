@@ -29,537 +29,536 @@ if (['security', 'cms', 'services'].indexOf(path) >= 0) return
 
 // clear /Start.aspx
 if (location.pathname === '/Start.aspx') {
-    location.pathname = ''
-    location.hash = ''
+  location.pathname = ''
+  location.hash = ''
 }
 
 // vue application
 const App = {
-    template: String.raw`
+  template: String.raw`
         <div class="bg-image" @mouseleave="stopSliding" @mouseup="stopSliding">
-            <div class="flex h-screen antialiased text-gray-800 overflow-hidden">
+          <div class="flex h-screen antialiased text-gray-800 overflow-hidden">
         
-                <!-- sidebar -->
-                <div class="flex">
+            <!-- sidebar -->
+            <div class="flex">
         
-                    <!-- courses list -->
-                    <div class="flex flex-row bg-white dark:bg-gray-700">
-                        <div ref="coursesBar" :style="{'width': coursesBarWidth + 'px'}"
-                            class="flex flex-col justify-start items-start p-3 flex-wrap select-none overflow-hidden overflow-x-auto items-center flex-shrink-0 w-20 bg-gradient-to-b from-gray-800 to-gray-700 dark:bg-gray-900">
+              <!-- courses list -->
+              <div class="flex flex-row bg-white dark:bg-gray-700">
+                <div ref="coursesBar" :style="{'width': coursesBarWidth + 'px'}"
+                  class="flex flex-col justify-start items-start p-3 flex-wrap select-none overflow-hidden overflow-x-auto items-center flex-shrink-0 w-20 bg-gradient-to-b from-gray-800 to-gray-700 dark:bg-gray-900">
         
-                            <button aria-label="toggle favorites" @click="toggleShowFavoriteCourses"
-                                class="flex shadow-xl items-center justify-center m-1 bg-gray-600 hover:bg-gray-500 hover-bg-gray-500 focus:outline-none focus:bg-gray-400 focus-outline-none focus-bg-gray-400 rounded-full h-12 w-12 text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
-                                    :fill="showFavoriteCourses ? '#fff' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                </svg>
-                            </button>
+                  <button aria-label="toggle favorites" @click="toggleShowFavoriteCourses"
+                    class="flex shadow-xl items-center justify-center m-1 bg-gray-600 hover:bg-gray-500 hover-bg-gray-500 focus:outline-none focus:bg-gray-400 focus-outline-none focus-bg-gray-400 rounded-full h-12 w-12 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" :fill="showFavoriteCourses ? '#fff' : 'none'"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                  </button>
         
-                            <ul class="p-1" v-for="course in shownCourses" :key="course.ID">
-                                <li @click="clickCourse(course)">
-                                    <div class="flex items-center">
-                                        <span :class="[getColor(course.ID)]"
-                                            class="flex shadow-xl items-center justify-center font-semibold h-12 w-12 rounded-2xl hover:rounded-xl hover-rounded-xl transform ease-in-out transition-all duration-300">
-                                            {{ course.ALIAS }}
-                                        </span>
-                                    </div>
-                                </li>
-                            </ul>
+                  <ul class="p-1" v-for="course in shownCourses" :key="course.ID">
+                    <li @click="clickCourse(course)">
+                      <div class="flex items-center">
+                        <span :class="[getColor(course.ID)]"
+                          class="flex shadow-xl items-center justify-center font-semibold h-12 w-12 rounded-2xl hover:rounded-xl hover-rounded-xl transform ease-in-out transition-all duration-300">
+                          {{ course.ALIAS }}
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
         
-                        </div>
+                </div>
+              </div>
+        
+              <!-- file viewer -->
+              <div class="flex flex-row bg-white dark:bg-gray-700" :class="{'border-r': selectedCourseVisable}">
+                <div ref='fileViewer' class="w-full flex flex-col m-3 mr-0"
+                  :class="{'ml-0': !showSelectedCourse, 'transition-all duration-300': !isMouseDown}"
+                  :style="{'width': fileViewerWidth + 'px' }">
+                  <div v-if="selectedCourseVisable"
+                    class="w-full shadow-sm rounded-lg p-2 bg-gray-200 text-gray-900 dark:bg-gray-900 dark:text-white overflow-auto">
+        
+                    <!-- course info and favorite toggle -->
+                    <div class="flex justify-between items-center">
+                      <h1 class="text-2xl font-semibold text-gray-600 m-2 mt-1 whitespace-nowrap truncate">
+                        {{ selectedCourse.NAME }}
+                      </h1>
+        
+                      <div class="flex">
+                        <svg @click="toggleFavorite(selectedCourse)" xmlns="http://www.w3.org/2000/svg"
+                          class="h-6 w-6 text-gray-600 mx-1 cursor-pointer"
+                          :fill="selectedCourse.IS_FAVORITE ? '#4b5563' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                      </div>
                     </div>
         
-                    <!-- file viewer -->
-                    <div class="flex flex-row bg-white dark:bg-gray-700" :class="{'border-r': selectedCourseVisable}">
-                        <div ref='fileViewer' class="w-full flex flex-col m-3 mr-0"
-                            :class="{'ml-0': !showSelectedCourse, 'transition-all duration-300': !isMouseDown}"
-                            :style="{'width': fileViewerWidth + 'px' }">
-                            <div v-if="selectedCourseVisable"
-                                class="w-full shadow-sm rounded-lg p-2 bg-gray-200 text-gray-900 dark:bg-gray-900 dark:text-white overflow-auto">
+                    <!-- content list -->
+                    <div class="select-none" v-if="shownContent" v-for="content in shownContent" :key="content.ID">
+                      <div class="cursor-pointer" @click="selectContent(selectedCourse, content)">
+                        <div
+                          :class="[  content.LEVEL === 1 ? 'ml-2' : '', content.LEVEL === 2 ? 'ml-4' : '',content.LEVEL === 3 ? 'ml-6' : '']"
+                          class="flex items-center justify-between p-2 rounded hover:bg-gray-300 hover-bg-gray-300">
+                          <div class="flex justify-between items-center w-full">
+                            <div class="overflow-hidden flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5" style="min-width: 20px" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  :d="getIconPath(content)" />
+                              </svg>
         
-                                <!-- course info and favorite toggle -->
-                                <div class="flex justify-between items-center">
-                                    <h1 class="text-2xl font-semibold text-gray-600 m-2 mt-1 whitespace-nowrap truncate">
-                                        {{ selectedCourse.NAME }}
-                                    </h1>
-        
-                                    <div class="flex">
-                                        <svg @click="toggleFavorite(selectedCourse)" xmlns="http://www.w3.org/2000/svg"
-                                            class="h-6 w-6 text-gray-600 mx-1 cursor-pointer"
-                                            :fill="selectedCourse.IS_FAVORITE ? '#4b5563' : 'none'" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                        </svg>
-                                    </div>
-                                </div>
-        
-                                <!-- content list -->
-                                <div class="select-none" v-if="shownContent" v-for="content in shownContent" :key="content.ID">
-                                    <div class="cursor-pointer" @click="selectContent(selectedCourse, content)">
-                                        <div :class="[  content.LEVEL === 1 ? 'ml-2' : '', content.LEVEL === 2 ? 'ml-4' : '',content.LEVEL === 3 ? 'ml-6' : '']"
-                                            class="flex items-center justify-between p-2 rounded hover:bg-gray-300 hover-bg-gray-300">
-                                            <div class="flex justify-between items-center w-full">
-                                                <div class="overflow-hidden flex items-center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5" style="min-width: 20px"
-                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            :d="getIconPath(content)" />
-                                                    </svg>
-        
-                                                    <a @click.prevent class="ml-2 text-sm truncate"
-                                                        :href="content.URL">{{ content.NAME }}</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                              <a @click.prevent class="ml-2 text-sm truncate" :href="content.URL">{{ content.NAME }}</a>
                             </div>
+                          </div>
                         </div>
-        
-                        <!-- slideBar -->
-                        <div :class="{'w-0' : !showSelectedCourse, 'w-3' : showSelectedCourse}"
-                            class="transition-all duration-300" style="cursor: col-resize" @mousedown="startSliding"></div>
+                      </div>
                     </div>
+                  </div>
                 </div>
         
-                <div class="flex flex-col h-full w-full select-none overflow-hidden">
-                    <!-- top bar -->
-                    <div class="h-11 p-0.5 p-0-5 flex flex justify-between border-b bg-white">
-                        <div class="flex w-full">
-        
-                            <!-- file viewer toggle -->
-                            <button v-if="selectedCourse" aria-label="toggle content list"
-                                @click="showSelectedCourse = !showSelectedCourse"
-                                class="m-0.5 m-0-5 p-1 w-9 px-2 rounded bg-gray-100 hover:bg-gray-200 hover-bg-gray-200 focus:outline-none focus:bg-gray-300 focus-outline-none focus-bg-gray-300 flex items-center">
-        
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16" />
-                                </svg>
-                            </button>
-        
-                            <!-- contentTab -->
-                            <div class="flex w-full overflow-hidden">
-                                <div v-if="selectedContent?.NAME"
-                                    class="m-0.5 m-0-5 p-1 flex-grow max-w-xs pl-2 pr-1 rounded bg-gray-100 flex justify-between items-center whitespace-nowrap">
-                                    <div class="flex flex-col">
-        
-                                        <a @click.prevent ref="tab" style="width: 275px" class="mr-2 truncate"
-                                            :href="selectedContent?.URL">{{ selectedContent?.NAME }}</a>
-                                        <!-- <span class="text-xs text-gray-500">PLAYING</span> -->
-                                    </div>
-        
-                                    <button aria-label="close content" @click="clearURL()"
-                                        class="hover:bg-gray-200 hover-bg-gray-200 focus:outline-none focus:bg-gray-300 focus-outline-none focus-bg-gray-300 rounded">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 m-1" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <!-- main content -->
-                    <main class="flex h-full shadow-3xl-inner">
-                        <div class="flex w-full" v-if="selectedContent">
-                            <span class="bg-white m-4 p-2 h-10 rounded" v-if="selectedContent?.TYPE === 'upload'">Inleveren word
-                                niet ondersteund</span>
-                            <iframe title="content" class="bg-white" :class="{'pointer-events-none' : isMouseDown}"
-                                v-if="selectedContent?.ITEMTYPE !== 9" :src="selectedContent?.URL" width="100%" height="100%">
-                            </iframe>
-                        </div>
-                    </main>
-                </div>
+                <!-- slideBar -->
+                <div :class="{'w-0' : !showSelectedCourse, 'w-3' : showSelectedCourse}" class="transition-all duration-300"
+                  style="cursor: col-resize" @mousedown="startSliding"></div>
+              </div>
             </div>
+        
+            <div class="flex flex-col h-full w-full select-none overflow-hidden">
+              <!-- top bar -->
+              <div class="h-11 p-0.5 p-0-5 flex flex justify-between border-b bg-white">
+                <div class="flex w-full">
+        
+                  <!-- file viewer toggle -->
+                  <button v-if="selectedCourse" aria-label="toggle content list"
+                    @click="showSelectedCourse = !showSelectedCourse"
+                    class="m-0.5 m-0-5 p-1 w-9 px-2 rounded bg-gray-100 hover:bg-gray-200 hover-bg-gray-200 focus:outline-none focus:bg-gray-300 focus-outline-none focus-bg-gray-300 flex items-center">
+        
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
+        
+                  <!-- contentTab -->
+                  <div class="flex w-full overflow-hidden">
+                    <div v-if="selectedContent?.NAME"
+                      class="m-0.5 m-0-5 p-1 flex-grow max-w-xs pl-2 pr-1 rounded bg-gray-100 flex justify-between items-center whitespace-nowrap">
+                      <div class="flex flex-col">
+        
+                        <a @click.prevent ref="tab" style="width: 275px" class="mr-2 truncate"
+                          :href="selectedContent?.URL">{{ selectedContent?.NAME }}</a>
+                        <!-- <span class="text-xs text-gray-500">PLAYING</span> -->
+                      </div>
+        
+                      <button aria-label="close content" @click="clearURL()"
+                        class="hover:bg-gray-200 hover-bg-gray-200 focus:outline-none focus:bg-gray-300 focus-outline-none focus-bg-gray-300 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 m-1" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        
+              <!-- main content -->
+              <main class="flex h-full shadow-3xl-inner">
+                <div class="flex w-full" v-if="selectedContent">
+                  <span class="bg-white m-4 p-2 h-10 rounded" v-if="selectedContent?.TYPE === 'upload'">Inleveren word
+                    niet ondersteund</span>
+                  <iframe title="content" class="bg-white" :class="{'pointer-events-none' : isMouseDown}"
+                    v-if="selectedContent?.ITEMTYPE !== 9"
+                    :src="'https://elo.windesheim.nl/Pages/StudyRouteSCOPlayer/StudyRouteSCOPlayer.aspx?FK_ID=' + selectedContent?.STUDYROUTE_ITEM_ID"
+                    width="100%" height="100%">
+                  </iframe>
+                </div>
+              </main>
+            </div>
+          </div>
         </div>
     `,
-    data() {
-        return {
-            activeSession: true,
-            showFavoriteCourses: localStorage.getItem('showFavoriteCourses') === 'false' ? false : true,
-            showSelectedCourse: false,
-            selectedCourseVisable: false,
-            selectedCourse: null,
-            selectedContent: null,
-            courses: [],
-            URLIds: [],
-            mousePosition: { x: 0, y: 0 },
-            isMouseDown: false,
-            currentOpenWidth: Number(localStorage.getItem('currentWidth')) || 300,
-            coursesBarWidth: 80,
-            startWidth: 0,
-            startMouse: 0,
-            distanceWidth: 0,
-        }
-    },
-
-    computed: {
-        // show the correct ammount of ccourses
-        shownCourses() {
-            if (this.showFavoriteCourses) return this.courses.filter((c) => c.IS_FAVORITE === true)
-            return this.courses
-        },
-        // only show content where the parent has HIDECHILDEREN off
-        shownContent() {
-            let content = this.selectedCourse.CONTENT
-
-            return content.filter(c => {
-                let parent = content.find(p => p.ID === c.PARENTID)
-
-                if (parent?.HIDECHILDEREN) return false
-                return true
-            })
-        },
-        // get the width of the file viewer
-        fileViewerWidth() {
-            if (this.showSelectedCourse) return this.currentOpenWidth
-            else return 0
-        }
-    },
-
-    watch: {
-        // add a delay to accommodate the animation
-        showSelectedCourse: function () {
-            if (this.showSelectedCourse) return this.selectedCourseVisable = true
-            setTimeout(() => this.selectedCourseVisable = false, 200)
-        },
-
-        // calculate the courses bar width if showFavoriteCourses changes
-        showFavoriteCourses: function () {
-            this.calculateCoursesBarWidth()
-        }
-    },
-
-    // start of application
-    async created() {
-        document.addEventListener('mousemove', this.mouseMoved)
-
-        this.checkAuth()
-        await this.getCourses()
-        this.calculateCoursesBarWidth()
-        this.readURL()
-    },
-
-    methods: {
-        // start sliding the width of the sidebar
-        startSliding(e) {
-            e.preventDefault()
-
-            this.isMouseDown = true
-            this.startWidth = this.fileViewerWidth
-
-            this.startMouse = e.clientX
-        },
-
-        // stop sliding the width of the sidebar
-        stopSliding(e) {
-            e.preventDefault()
-
-            this.isMouseDown = false
-        },
-
-        // the mouse has moved
-        mouseMoved(e) {
-            e.preventDefault()
-
-            this.mousePosition.x = e.clientX
-            this.mousePosition.y = e.clientY
-
-            if (!this.isMouseDown) return
-
-            this.distanceWidth = (this.mousePosition.x - this.startMouse) + this.startWidth
-
-            // constraints
-            if (this.distanceWidth > window.innerWidth - 200) this.distanceWidth = window.innerWidth - 200
-            if (this.distanceWidth < 150) this.distanceWidth = 150
-
-            requestAnimationFrame(this.updateFileViewerWidth)
-        },
-
-        // calculate the needed width for the courses bar
-        calculateCoursesBarWidth() {
-            this.coursesBarWidth = 80;
-
-            this.$nextTick(() => {
-                this.coursesBarWidth = this.$refs.coursesBar ? this.$refs.coursesBar?.scrollWidth : 80
-            })
-        },
-
-        // update the width of the sidebar
-        updateFileViewerWidth() {
-            this.currentOpenWidth = this.distanceWidth
-            localStorage.setItem('currentWidth', this.currentOpenWidth)
-        },
-
-        // get the colors based on the id
-        getColor(id) {
-            return colorStrings[id.toString().slice(-1)]
-        },
-
-        // get the correct icon path for each content type
-        getIconPath(content) {
-            if (content.ITEMTYPE === 0) return icons[this.getContentType(content)]
-            return icons[content.TYPE]
-        },
-
-        // get the content type
-        getContentType(content) {
-            if (content.ITEMTYPE === 0 && content.HIDECHILDEREN) return 'folder'
-            if (content.ITEMTYPE === 0 && !content.HIDECHILDEREN) return 'openFolder'
-            if (content.ITEMTYPE === 3 && this.isLink(content)) return 'link'
-            if (content.ITEMTYPE === 3 || (content.ITEMTYPE === 10 && ['mp4'].indexOf(content?.URL.split('.').pop()) >= 0)) return 'video'
-            if (content.ITEMTYPE === 10 && ['doc', 'docx', 'dotx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv', 'sql'].indexOf(content?.URL.split('.').pop()) >= 0) return 'downloadFile'
-            if (content.ITEMTYPE === 10 && ['zip', 'rar'].indexOf(content?.URL.split('.').pop()) >= 0) return 'downloadFolder'
-            if (content.ITEMTYPE === 10 && ['jpg', 'jpeg', 'png', 'gif', 'bmp'].indexOf(content?.URL.split('.').pop()) >= 0) return 'image'
-            if (content.ITEMTYPE === 11) return 'book'
-            if (content.ITEMTYPE === 9) return 'upload'
-
-            return 'file'
-        },
-
-        // check is countent is a link some items that have: content.OPEN_IN_NEW_WINDOW can vbe opened in a iframe
-        isLink(content) {
-            try {
-                return window.location.hostname.split('.')[1] !== (new URL(content.URL)).hostname.split('.')[1]
-            } catch (e) {
-                console.warn(`invalid URL error: ${e}`)
-            }
-        },
-
-        // set the url 
-        setURL(content = null) {
-            if (!history.pushState) return
-            let newURL = ''
-
-            if (this.selectedCourse !== null) this.URLIds[0] = this.selectedCourse.ID
-            if (content !== null) {
-                this.URLIds[content.LEVEL + 1] = content.ID.toString()
-                this.URLIds.slice(0, content.LEVEL - 2)
-                this.URLIds = this.URLIds.slice(0, content.LEVEL + 2)
-            }
-
-            if (this.URLIds !== null) newURL += `/#${this.URLIds.join('/')}`
-
-            if (newURL !== window.location.href && content.ITEMTYPE !== 0) {
-                history.replaceState({ title: newURL }, newURL, newURL)
-            }
-        },
-
-        // removes dulpicate objects from arrays nessesery for the file browser
-        removeDuplicateObjectFromArray(arr) {
-            return arr.reduce((filter, current) => {
-                if (!filter.find(item => item.ID === current.ID)) return filter.concat([current])
-                return filter
-            }, [])
-        },
-
-        // clear the content
-        clearURL() {
-            this.selectedContent = null
-            history.replaceState({ title: '' }, '', '/')
-        },
-
-        // close all content from a course
-        closeAll(content) {
-            content.forEach((item) => item.HIDECHILDEREN = true)
-            return content
-        },
-
-        // close all childeren of a specified folder
-        closeAllChilderen(course, content) {
-            let childerenReached = false
-
-            course?.CONTENT.forEach(item => {
-                if (item.LEVEL === content.LEVEL) childerenReached = false
-                if (item.ID === content.ID) childerenReached = true
-                if (childerenReached === true) item.HIDECHILDEREN = true
-            });
-        },
-
-        // select content from the file viewer
-        selectContent(course, content) {
-            // itemtype 0 is a folder 
-            if (content.ITEMTYPE === 0) {
-                this.getCoursesContent(course, content.ID)
-                content.HIDECHILDEREN = !content.HIDECHILDEREN
-
-                if (content.HIDECHILDEREN) this.closeAllChilderen(course, content)
-            } else {
-                if (this.isLink(content)) return window.open(content.URL)
-                this.selectedContent = content
-            }
-
-            this.setURL(content)
-        },
-
-        // toggle the showing of favorite courses
-        toggleShowFavoriteCourses() {
-            this.showFavoriteCourses = !this.showFavoriteCourses
-            localStorage.setItem('showFavoriteCourses', this.showFavoriteCourses)
-        },
-
-        // async functions
-        // click a course
-        async clickCourse(course) {
-            await this.selectCourse(course)
-            this.showSelectedCourse = true
-        },
-
-        // select a course
-        async selectCourse(course) {
-            this.selectedCourse = course
-            await this.getCoursesContent(course)
-            this.closeAll(course?.CONTENT)
-        },
-
-        // view an incoming url and load the correct content
-        async readURL() {
-            let ids = window.location.hash.substring(1).split('/')
-
-            let course = this.courses.find(course => course.ID == ids[0])
-            if (course !== undefined) await this.selectCourse(course)
-
-            ids.shift()
-
-            for (const id of ids) {
-                content = course?.CONTENT.find(item => item.ID == id)
-                await this.selectContent(course, content)
-            }
-        },
-
-        // toggle the favorite staus of an course
-        async toggleFavorite(selectedCourse) {
-            await this.fetchAPI('/Home/StudyRoute/StudyRoute/ToggleFavorite', {
-                studyrouteId: selectedCourse.ID
-            }, 'POST').then(r => {
-                if (r?.success === true) selectedCourse.IS_FAVORITE = !selectedCourse.IS_FAVORITE
-            })
-        },
-
-        // check if the user is loged in
-        async checkAuth() {
-            await this.fetchAPI('/services/Mobile.asmx/LoadUserSchoolConfig').then((data) => {
-                if (data.ACTIVESESSION) return this.activeSession = true
-                this.activeSession = false
-
-                window.location.replace(`/Security/SAML2/Login.aspx?redirectUrl=${encodeURIComponent(location.href)} `)
-            })
-        },
-
-        // get the courses
-        async getCourses() {
-            await this.cacheAPI('/services/Studyroutemobile.asmx/LoadStudyroutes', {
-                start: 0,
-                length: 100,
-                filter: 0,
-                search: ''
-            }).then(data => {
-                if (data?.STUDYROUTES.length == 0) return
-
-                let courses = data?.STUDYROUTES
-
-                if (!courses) return
-
-                // create the alliasses
-                courses.map(course => {
-                    // check abbreviations
-                    let a = abbreviations?.[course.ID]
-
-                    // delete lowecase spaces - and shorten to 4 max
-                    if (a === undefined) a = course.NAME.replace(/[a-z -]+/g, '').slice(0, 4)
-
-                    // else get first 2 cars of name
-                    if (a === '') a = `${course.NAME.replace(/[ ]+/g, '').slice(0, 2).toUpperCase()} ${course.NAME.replace(/[a-zA-Z -]+/g, '')} `
-
-                    course.ALIAS = a
-                    course.CONTENT = []
-                })
-
-                this.courses = courses
-            })
-        },
-
-        // get the content from an course
-        async getCoursesContent(course, parentid = -1) {
-            await this.cacheAPI('/services/Studyroutemobile.asmx/LoadStudyrouteContent', {
-                studyrouteid: course.ID,
-                parentid: parentid,
-                start: 0,
-                length: 100
-            }).then(({ STUDYROUTE_CONTENT }) => {
-                const parent = course.CONTENT.find(item => item.ID === parentid)
-                const index = course.CONTENT.findIndex(item => item.ID === parentid)
-                const level = index === -1 ? 0 : parent?.LEVEL + 1
-
-                STUDYROUTE_CONTENT.forEach(c => c.LEVEL = level)
-                STUDYROUTE_CONTENT.forEach(c => (c.ITEMTYPE === 0) && (c.HIDECHILDEREN = true))
-                STUDYROUTE_CONTENT.forEach(c => c.TYPE = this.getContentType(c))
-
-                let content = [...course.CONTENT.slice(0, index + Math.min(level, 1)), ...STUDYROUTE_CONTENT, ...course.CONTENT]
-
-                course.CONTENT = this.removeDuplicateObjectFromArray(content)
-            })
-        },
-
-        // same as fetchAPI but with a cache
-        async cacheAPI(url = '', data = {}, method = 'GET') {
-            let URLWithPara = url
-
-            if (Object.entries(data).length > 0 && method === 'GET') URLWithPara += '?' + (new URLSearchParams(data)).toString()
-
-            try {
-                if (method === 'GET' && JSON.parse(localStorage.getItem(URLWithPara)) !== null && JSON.parse(localStorage.getItem(url)) !== undefined) {
-                    this.fetchAPI(url, data, method)
-                    return JSON.parse(localStorage.getItem(URLWithPara))
-                }
-            } catch (e) {
-                console.warn(`JSON parse error: ${e} `)
-            }
-
-            return await this.fetchAPI(url, data, method);
-        },
-
-        // fetch a resource
-        async fetchAPI(url = '', data = {}, method = 'GET') {
-            const options = {
-                method: method, // *GET, POST, PUT, DELETE, etc.
-                mode: 'cors', // no-cors, *cors, same-origin
-                cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
-                credentials: 'same-origin', // include, *same-origin, omit
-                redirect: 'follow', // manual, *follow, error
-                referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            }
-
-            if (Object.entries(data).length > 0 && method === 'GET') url += '?' + (new URLSearchParams(data)).toString()
-
-            if (Object.entries(data).length > 0 && method !== 'GET') {
-                options.headers = { 'Content-Type': 'application/json' }
-                options.body = JSON.stringify(data) // body data type must match "Content-Type" header     
-            }
-
-            return await fetch(url, options)
-                .then(res => {
-                    // get content-type
-                    const contentType = res.headers.get("content-type")
-
-                    // parses JSON response into native JavaScript objects only if JSON
-                    if (contentType && contentType.indexOf("application/json") !== -1) return res.json()
-                    else window.location.replace(`/Security/SAML2/Login.aspx?redirectUrl=${encodeURIComponent(location.href)} `)
-                })
-                .then(json => {
-                    localStorage.setItem(url, JSON.stringify(json))
-
-                    return json
-                })
-                .catch(e => console.warn(`fetch error: ${e} `))
-        }
+  data() {
+    return {
+      activeSession: true,
+      showFavoriteCourses: localStorage.getItem('showFavoriteCourses') === 'false' ? false : true,
+      showSelectedCourse: false,
+      selectedCourseVisable: false,
+      selectedCourse: null,
+      selectedContent: null,
+      courses: [],
+      URLIds: [],
+      mousePosition: { x: 0, y: 0 },
+      isMouseDown: false,
+      currentOpenWidth: Number(localStorage.getItem('currentWidth')) || 300,
+      coursesBarWidth: 80,
+      startWidth: 0,
+      startMouse: 0,
+      distanceWidth: 0,
     }
+  },
+
+  computed: {
+    // show the correct ammount of ccourses
+    shownCourses() {
+      if (this.showFavoriteCourses) return this.courses.filter((c) => c.IS_FAVORITE === true)
+      return this.courses
+    },
+    // only show content where the parent has HIDECHILDEREN off
+    shownContent() {
+      let content = this.selectedCourse.CONTENT
+
+      return content.filter(c => {
+        let parent = content.find(p => p.ID === c.PARENTID)
+
+        if (parent?.HIDECHILDEREN) return false
+        return true
+      })
+    },
+    // get the width of the file viewer
+    fileViewerWidth() {
+      if (this.showSelectedCourse) return this.currentOpenWidth
+      else return 0
+    }
+  },
+
+  watch: {
+    // add a delay to accommodate the animation
+    showSelectedCourse: function () {
+      if (this.showSelectedCourse) return this.selectedCourseVisable = true
+      setTimeout(() => this.selectedCourseVisable = false, 200)
+    },
+
+    // calculate the courses bar width if showFavoriteCourses changes
+    showFavoriteCourses: function () {
+      this.calculateCoursesBarWidth()
+    }
+  },
+
+  // start of application
+  async created() {
+    document.addEventListener('mousemove', this.mouseMoved)
+
+    this.checkAuth()
+    await this.getCourses()
+    this.calculateCoursesBarWidth()
+    this.readURL()
+  },
+
+  methods: {
+    // start sliding the width of the sidebar
+    startSliding(e) {
+      e.preventDefault()
+
+      this.isMouseDown = true
+      this.startWidth = this.fileViewerWidth
+
+      this.startMouse = e.clientX
+    },
+
+    // stop sliding the width of the sidebar
+    stopSliding(e) {
+      e.preventDefault()
+
+      this.isMouseDown = false
+    },
+
+    // the mouse has moved
+    mouseMoved(e) {
+      e.preventDefault()
+
+      this.mousePosition.x = e.clientX
+      this.mousePosition.y = e.clientY
+
+      if (!this.isMouseDown) return
+
+      this.distanceWidth = (this.mousePosition.x - this.startMouse) + this.startWidth
+
+      // constraints
+      if (this.distanceWidth > window.innerWidth - 200) this.distanceWidth = window.innerWidth - 200
+      if (this.distanceWidth < 150) this.distanceWidth = 150
+
+      requestAnimationFrame(this.updateFileViewerWidth)
+    },
+
+    // calculate the needed width for the courses bar
+    calculateCoursesBarWidth() {
+      this.coursesBarWidth = 80;
+
+      this.$nextTick(() => {
+        this.coursesBarWidth = this.$refs.coursesBar ? this.$refs.coursesBar?.scrollWidth : 80
+      })
+    },
+
+    // update the width of the sidebar
+    updateFileViewerWidth() {
+      this.currentOpenWidth = this.distanceWidth
+      localStorage.setItem('currentWidth', this.currentOpenWidth)
+    },
+
+    // get the colors based on the id
+    getColor(id) {
+      return colorStrings[id.toString().slice(-1)]
+    },
+
+    // get the correct icon path for each content type
+    getIconPath(content) {
+      if (content.ITEMTYPE === 0) return icons[this.getContentType(content)]
+      return icons[content.TYPE]
+    },
+
+    // get the content type
+    getContentType(content) {
+      if (content.ITEMTYPE === 0 && content.HIDECHILDEREN) return 'folder'
+      if (content.ITEMTYPE === 0 && !content.HIDECHILDEREN) return 'openFolder'
+      if (content.ITEMTYPE === 3 && this.isLink(content)) return 'link'
+      if (content.ITEMTYPE === 3 || (content.ITEMTYPE === 10 && ['mp4'].indexOf(content?.URL.split('.').pop()) >= 0)) return 'video'
+      if (content.ITEMTYPE === 10 && ['doc', 'docx', 'dotx', 'ppt', 'pptx', 'xls', 'xlsx', 'csv', 'sql'].indexOf(content?.URL.split('.').pop()) >= 0) return 'downloadFile'
+      if (content.ITEMTYPE === 10 && ['zip', 'rar'].indexOf(content?.URL.split('.').pop()) >= 0) return 'downloadFolder'
+      if (content.ITEMTYPE === 10 && ['jpg', 'jpeg', 'png', 'gif', 'bmp'].indexOf(content?.URL.split('.').pop()) >= 0) return 'image'
+      if (content.ITEMTYPE === 11) return 'book'
+      if (content.ITEMTYPE === 9) return 'upload'
+
+      return 'file'
+    },
+
+    // check is countent is a link some items that have: content.OPEN_IN_NEW_WINDOW can vbe opened in a iframe
+    isLink(content) {
+      try {
+        return window.location.hostname.split('.')[1] !== (new URL(content.URL)).hostname.split('.')[1]
+      } catch (e) {
+        console.warn(`invalid URL error: ${e}`)
+      }
+    },
+
+    // set the url 
+    setURL(content = null) {
+      if (!history.pushState) return
+      let newURL = ''
+
+      if (this.selectedCourse !== null) this.URLIds[0] = this.selectedCourse.ID
+      if (content !== null) {
+        this.URLIds[content.LEVEL + 1] = content.ID.toString()
+        this.URLIds.slice(0, content.LEVEL - 2)
+        this.URLIds = this.URLIds.slice(0, content.LEVEL + 2)
+      }
+
+      if (this.URLIds !== null) newURL += `/#${this.URLIds.join('/')}`
+
+      if (newURL !== window.location.href && content.ITEMTYPE !== 0) {
+        history.replaceState({ title: newURL }, newURL, newURL)
+      }
+    },
+
+    // removes dulpicate objects from arrays nessesery for the file browser
+    removeDuplicateObjectFromArray(arr) {
+      return arr.reduce((filter, current) => {
+        if (!filter.find(item => item.ID === current.ID)) return filter.concat([current])
+        return filter
+      }, [])
+    },
+
+    // clear the content
+    clearURL() {
+      this.selectedContent = null
+      history.replaceState({ title: '' }, '', '/')
+    },
+
+    // close all content from a course
+    closeAll(content) {
+      content.forEach((item) => item.HIDECHILDEREN = true)
+      return content
+    },
+
+    // close all childeren of a specified folder
+    closeAllChilderen(course, content) {
+      let childerenReached = false
+
+      course?.CONTENT.forEach(item => {
+        if (item.LEVEL === content.LEVEL) childerenReached = false
+        if (item.ID === content.ID) childerenReached = true
+        if (childerenReached === true) item.HIDECHILDEREN = true
+      });
+    },
+
+    // select content from the file viewer
+    selectContent(course, content) {
+      // itemtype 0 is a folder 
+      if (content.ITEMTYPE === 0) {
+        this.getCoursesContent(course, content.ID)
+        content.HIDECHILDEREN = !content.HIDECHILDEREN
+
+        if (content.HIDECHILDEREN) this.closeAllChilderen(course, content)
+      } else {
+        if (this.isLink(content)) return window.open(content.URL)
+        this.selectedContent = content
+      }
+
+      this.setURL(content)
+    },
+
+    // toggle the showing of favorite courses
+    toggleShowFavoriteCourses() {
+      this.showFavoriteCourses = !this.showFavoriteCourses
+      localStorage.setItem('showFavoriteCourses', this.showFavoriteCourses)
+    },
+
+    // async functions
+    // click a course
+    async clickCourse(course) {
+      await this.selectCourse(course)
+      this.showSelectedCourse = true
+    },
+
+    // select a course
+    async selectCourse(course) {
+      this.selectedCourse = course
+      await this.getCoursesContent(course)
+      this.closeAll(course?.CONTENT)
+    },
+
+    // view an incoming url and load the correct content
+    async readURL() {
+      let ids = window.location.hash.substring(1).split('/')
+
+      let course = this.courses.find(course => course.ID == ids[0])
+      if (course !== undefined) await this.selectCourse(course)
+
+      ids.shift()
+
+      for (const id of ids) {
+        content = course?.CONTENT.find(item => item.ID == id)
+        await this.selectContent(course, content)
+      }
+    },
+
+    // toggle the favorite staus of an course
+    async toggleFavorite(selectedCourse) {
+      await this.fetchAPI('/Home/StudyRoute/StudyRoute/ToggleFavorite', {
+        studyrouteId: selectedCourse.ID
+      }, 'POST').then(r => {
+        if (r?.success === true) selectedCourse.IS_FAVORITE = !selectedCourse.IS_FAVORITE
+      })
+    },
+
+    // check if the user is loged in
+    async checkAuth() {
+      await this.fetchAPI('/services/Mobile.asmx/LoadUserSchoolConfig').then((data) => {
+        if (data.ACTIVESESSION) return this.activeSession = true
+        this.activeSession = false
+
+        window.location.replace(`/Security/SAML2/Login.aspx?redirectUrl=${encodeURIComponent(location.href)} `)
+      })
+    },
+
+    // get the courses
+    async getCourses() {
+      await this.cacheAPI('/services/Studyroutemobile.asmx/LoadStudyroutes', {
+        start: 0,
+        length: 100,
+        filter: 0,
+        search: ''
+      }).then(data => {
+        if (data?.STUDYROUTES.length == 0) return
+
+        let courses = data?.STUDYROUTES
+
+        if (!courses) return
+
+        // create the alliasses
+        courses.map(course => {
+          // check abbreviations
+          let a = abbreviations?.[course.ID]
+
+          // delete lowecase spaces - and shorten to 4 max
+          if (a === undefined) a = course.NAME.replace(/[a-z -]+/g, '').slice(0, 4)
+
+          // else get first 2 cars of name
+          if (a === '') a = `${course.NAME.replace(/[ ]+/g, '').slice(0, 2).toUpperCase()} ${course.NAME.replace(/[a-zA-Z -]+/g, '')} `
+
+          course.ALIAS = a
+          course.CONTENT = []
+        })
+
+        this.courses = courses
+      })
+    },
+
+    // get the content from an course
+    async getCoursesContent(course, parentid = -1) {
+      await this.cacheAPI('/services/Studyroutemobile.asmx/LoadStudyrouteContent', {
+        studyrouteid: course.ID,
+        parentid: parentid,
+        start: 0,
+        length: 100
+      }).then(({ STUDYROUTE_CONTENT }) => {
+        const parent = course.CONTENT.find(item => item.ID === parentid)
+        const index = course.CONTENT.findIndex(item => item.ID === parentid)
+        const level = index === -1 ? 0 : parent?.LEVEL + 1
+
+        STUDYROUTE_CONTENT.forEach(c => c.LEVEL = level)
+        STUDYROUTE_CONTENT.forEach(c => (c.ITEMTYPE === 0) && (c.HIDECHILDEREN = true))
+        STUDYROUTE_CONTENT.forEach(c => c.TYPE = this.getContentType(c))
+
+        let content = [...course.CONTENT.slice(0, index + Math.min(level, 1)), ...STUDYROUTE_CONTENT, ...course.CONTENT]
+
+        course.CONTENT = this.removeDuplicateObjectFromArray(content)
+      })
+    },
+
+    // same as fetchAPI but with a cache
+    async cacheAPI(url = '', data = {}, method = 'GET') {
+      let URLWithPara = url
+
+      if (Object.entries(data).length > 0 && method === 'GET') URLWithPara += '?' + (new URLSearchParams(data)).toString()
+
+      try {
+        if (method === 'GET' && JSON.parse(localStorage.getItem(URLWithPara)) !== null && JSON.parse(localStorage.getItem(url)) !== undefined) {
+          this.fetchAPI(url, data, method)
+          return JSON.parse(localStorage.getItem(URLWithPara))
+        }
+      } catch (e) {
+        console.warn(`JSON parse error: ${e} `)
+      }
+
+      return await this.fetchAPI(url, data, method);
+    },
+
+    // fetch a resource
+    async fetchAPI(url = '', data = {}, method = 'GET') {
+      const options = {
+        method: method, // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'default', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      }
+
+      if (Object.entries(data).length > 0 && method === 'GET') url += '?' + (new URLSearchParams(data)).toString()
+
+      if (Object.entries(data).length > 0 && method !== 'GET') {
+        options.headers = { 'Content-Type': 'application/json' }
+        options.body = JSON.stringify(data) // body data type must match "Content-Type" header     
+      }
+
+      return await fetch(url, options)
+        .then(res => {
+          // get content-type
+          const contentType = res.headers.get("content-type")
+
+          // parses JSON response into native JavaScript objects only if JSON
+          if (contentType && contentType.indexOf("application/json") !== -1) return res.json()
+          else window.location.replace(`/Security/SAML2/Login.aspx?redirectUrl=${encodeURIComponent(location.href)} `)
+        })
+        .then(json => {
+          localStorage.setItem(url, JSON.stringify(json))
+
+          return json
+        })
+        .catch(e => console.warn(`fetch error: ${e} `))
+    }
+  }
 }
 
 // styling
@@ -637,39 +636,41 @@ bodyDiv.appendChild(injectorDiv)
 
 // the vue instance
 new Vue({
-    el: injectorDiv,
-    template: '<App/>',
-    components: { App }
+  el: injectorDiv,
+  template: '<App/>',
+  components: { App }
 })
 
 // static lists
 // the abbreviations for all of the diferent courses, needs to be updated
 const abbreviations = {
-    75552: 'AFO',
-    75740: 'DB',
-    75734: 'ENG1',
-    75569: 'JAVA',
-    75542: 'KBS1',
-    75571: 'KBS2',
-    75513: 'NL',
-    75539: 'PS',
-    75551: 'PM',
-    75733: 'ROBO',
-    53987: 'SCHR'
+  75552: 'AFO',
+  75740: 'DB',
+  75734: 'ENG1',
+  75569: 'JAVA',
+  75542: 'KBS1',
+  75571: 'KBS2',
+  75513: 'NL',
+  75539: 'PS',
+  75551: 'PM',
+  75733: 'ROBO',
+  53987: 'SCHR',
+  79480: 'KBS3',
+  70644: 'OR',
 }
 
 // icon list for the difrent file types
 const icons = {
-    folder: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z',
-    openFolder: 'M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z',
-    link: 'M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14',
-    file: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-    downloadFile: 'M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-    downloadFolder: 'M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z',
-    image: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
-    video: 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z',
-    book: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
-    upload: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12'
+  folder: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z',
+  openFolder: 'M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z',
+  link: 'M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14',
+  file: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+  downloadFile: 'M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+  downloadFolder: 'M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z',
+  image: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
+  video: 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z',
+  book: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+  upload: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12'
 }
 
 // color stings for the diferent courses
