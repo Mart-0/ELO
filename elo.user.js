@@ -8,7 +8,7 @@
 // @downloadURL   https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @updateURL     https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @supportURL    https://github.com/Mart-0/ELO/issues
-// @version       1.0.1
+// @version       1.0.2
 
 // @match         https://elo.windesheim.nl/*
 // @grant         none
@@ -664,6 +664,8 @@ const abbreviations = {
   70644: 'OR',
   79535: 'UML',
   79482: 'C#',
+  79506: 'HP', // DNM
+  79505: 'HP', // NS
 }
 
 // icon list for the difrent file types
