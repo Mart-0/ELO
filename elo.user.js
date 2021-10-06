@@ -664,6 +664,7 @@ const abbreviations = {
   70644: 'OR',
   79535: 'UML',
   79482: 'C#',
+  79506: 'HP',
 }
 
 // icon list for the difrent file types
