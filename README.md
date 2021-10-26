@@ -31,3 +31,6 @@ Nadat je een vak gekozen hebt kun je de inhoud van het vak bekijken:
 ![screenshot2.jpg](images/screenshots/screenshot2.jpg)
 Een gekozen item opent naast de inhoud van het vak:
 ![screenshot3.jpg](images/screenshots/screenshot3.jpg)
+
+## Development
+
