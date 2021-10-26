@@ -8,7 +8,7 @@
 // @downloadURL   https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @updateURL     https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @supportURL    https://github.com/Mart-0/ELO/issues
-// @version       1.0.2
+// @version       1.0.3
 
 // @match         https://elo.windesheim.nl/*
 // @grant         none
@@ -236,7 +236,7 @@ const App = {
   },
 
   // start of application
-  async created() {
+  async mounted() {
     document.addEventListener('mousemove', this.mouseMoved)
 
     this.checkAuth()
@@ -449,6 +449,7 @@ const App = {
     // check if the user is loged in
     async checkAuth() {
       await this.fetchAPI('/services/Mobile.asmx/LoadUserSchoolConfig').then((data) => {
+        console.log(data);
         if (data.ACTIVESESSION) return this.activeSession = true
         this.activeSession = false
 
@@ -554,7 +555,7 @@ const App = {
 
           // parses JSON response into native JavaScript objects only if JSON
           if (contentType && contentType.indexOf("application/json") !== -1) return res.json()
-          else window.location.replace(`/Security/SAML2/Login.aspx?redirectUrl=${encodeURIComponent(location.href)} `)
+          else this.checkAuth()
         })
         .then(json => {
           localStorage.setItem(url, JSON.stringify(json))
@@ -593,6 +594,9 @@ const html = document.getElementsByTagName('html')[0]
 html.removeChild(document.body)
 html.appendChild(document.createElement('body'))
 document.body.onload = null
+
+document.write('')
+document.close()
 
 // clear head
 document.head.innerHTML = ''
