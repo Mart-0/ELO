@@ -8,7 +8,7 @@
 // @downloadURL   https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @updateURL     https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @supportURL    https://github.com/Mart-0/ELO/issues
-// @version       1.1.0
+// @version       1.2.0
 
 // @match         https://elo.windesheim.nl/*
 // @grant         none
@@ -120,7 +120,7 @@ const App = {
                 <!-- slideBar -->
                 <div :class="{'w-0' : !showSelectedCourse, 'w-3' : showSelectedCourse}" class="transition-all duration-300 flex items-center justify-center"
                   style="cursor: col-resize" @mousedown="startSliding">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 overflow-visible" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg v-show="showSelectedCourse" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 overflow-visible text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
 </svg>
                   </div>
@@ -137,7 +137,7 @@ const App = {
                     @click="showSelectedCourse = !showSelectedCourse"
                     class="m-0.5 m-0-5 p-1 w-9 px-2 rounded bg-gray-100 hover:bg-gray-200 hover-bg-gray-200 focus:outline-none focus:bg-gray-300 focus-outline-none focus-bg-gray-300 flex items-center">
         
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
@@ -208,6 +208,7 @@ const App = {
       if (this.showFavoriteCourses) return this.courses.filter((c) => c.IS_FAVORITE === true)
       return this.courses
     },
+
     // only show content where the parent has HIDECHILDEREN off
     shownContent() {
       let content = this.selectedCourse.CONTENT
@@ -250,6 +251,10 @@ const App = {
   },
 
   methods: {
+    // sort courses so the colors match
+    sortCourses(courses) {
+      return courses.sort((a, b) => Number(a.ID.toString().slice(-1)) - Number(b.ID.toString().slice(-1)))
+    },
     // start sliding the width of the sidebar
     startSliding(e) {
       e.preventDefault()
@@ -394,7 +399,7 @@ const App = {
 
         if (content.HIDECHILDEREN) this.closeAllChilderen(course, content)
       } else {
-        if (this.isLink(content)) return window.open(content.URL)
+        if (this.isLink(content) || content.TYPE == 'downloadFile') return window.open(content.URL)
         this.selectedContent = content
       }
 
@@ -413,8 +418,8 @@ const App = {
     // async functions
     // click a course
     async clickCourse(course) {
-      await this.selectCourse(course)
       this.showSelectedCourse = true
+      await this.selectCourse(course)
     },
 
     // select a course
@@ -446,7 +451,15 @@ const App = {
       await this.fetchAPI('/Home/StudyRoute/StudyRoute/ToggleFavorite', {
         studyrouteId: selectedCourse.ID
       }, 'POST').then(r => {
-        if (r?.success === true) selectedCourse.IS_FAVORITE = !selectedCourse.IS_FAVORITE
+        if (r?.success === true) {
+          selectedCourse.IS_FAVORITE = !selectedCourse.IS_FAVORITE
+          this.removeCache('/services/Studyroutemobile.asmx/LoadStudyroutes', {
+            start: 0,
+            length: 100,
+            filter: 0,
+            search: ''
+          })
+        }
       })
     },
 
@@ -468,7 +481,7 @@ const App = {
         length: 100,
         filter: 0,
         search: ''
-      }).then(data => {
+      }, 'GET').then(data => {
         if (data?.STUDYROUTES.length == 0) return
 
         let courses = data?.STUDYROUTES
@@ -490,7 +503,7 @@ const App = {
           course.CONTENT = []
         })
 
-        this.courses = courses
+        this.courses = this.sortCourses(courses)
       })
     },
 
@@ -515,6 +528,14 @@ const App = {
         course.CONTENT = this.removeDuplicateObjectFromArray(content)
       })
     },
+    // remove a cached items
+    removeCache(url = '', data = {}, method = 'GET') {
+      let URLWithPara = url
+
+      if (Object.entries(data).length > 0 && method === 'GET') URLWithPara += '?' + (new URLSearchParams(data)).toString()
+
+      localStorage.removeItem(URLWithPara)
+    },
 
     // same as fetchAPI but with a cache
     async cacheAPI(url = '', data = {}, method = 'GET') {
@@ -526,7 +547,7 @@ const App = {
         if (
           method === 'GET' &&
           JSON.parse(localStorage.getItem(URLWithPara)) !== null &&
-          JSON.parse(localStorage.getItem(url)) !== undefined &&
+          JSON.parse(localStorage.getItem(URLWithPara)) !== undefined &&
           JSON.parse(localStorage.getItem(URLWithPara)) !== '' &&
           JSON.parse(localStorage.getItem(URLWithPara)) !== {}
         ) {
@@ -700,4 +721,14 @@ const icons = {
 }
 
 // color stings for the diferent courses
-const colorStrings = ['bg-blue-600 text-blue-100', 'bg-yellow-600 text-yellow-100', 'bg-green-600 text-green-100', 'bg-red-600 text-red-100', 'bg-purple-600 text-purple-100', 'bg-pink-600 text-pink-100', 'bg-red-600 text-red-100', 'bg-yellow-600 text-yellow-100', 'bg-red-600 text-red-100', 'bg-green-600 text-green-100',]
+const colorStrings = [
+  'bg-blue-600 text-blue-100',
+  'bg-pink-600 text-pink-100',
+  'bg-red-600 text-red-100',
+  'bg-red-600 text-red-100',
+  'bg-yellow-600 text-yellow-100',
+  'bg-green-600 text-green-100',
+  'bg-green-600 text-green-100',
+  'bg-green-600 text-green-100',
+  'bg-green-600 text-green-100',
+]
