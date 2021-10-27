@@ -409,22 +409,6 @@ const App = {
       this.setURL(content)
     },
 
-    download(path, filename) {
-      // Create a new link
-      const anchor = document.createElement('a');
-      anchor.href = path;
-      anchor.download = filename;
-
-      // Append to the DOM
-      document.body.appendChild(anchor);
-
-      // Trigger `click` event
-      anchor.click();
-
-      // Remove element from DOM
-      document.body.removeChild(anchor);
-    },
-
     // toggle the showing of favorite courses
     toggleShowFavoriteCourses() {
       this.showFavoriteCourses = !this.showFavoriteCourses
@@ -544,7 +528,7 @@ const App = {
         course.CONTENT = this.removeDuplicateObjectFromArray(content)
       })
     },
-
+    // remove a cached items
     removeCache(url = '', data = {}, method = 'GET') {
       let URLWithPara = url
 
