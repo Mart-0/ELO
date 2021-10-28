@@ -283,7 +283,7 @@ const App = {
 
     // calculate the needed width for the courses bar
     calculateCoursesBarWidth() {
-      this.coursesBarWidth = 80;
+      this.coursesBarWidth = 80
 
       this.$nextTick(() => {
         this.coursesBarWidth = this.$refs.coursesBar ? this.$refs.coursesBar?.scrollWidth : 80
@@ -378,7 +378,7 @@ const App = {
         if (item.LEVEL === content.LEVEL) childerenReached = false
         if (item.ID === content.ID) childerenReached = true
         if (childerenReached === true) item.HIDECHILDEREN = true
-      });
+      })
     },
 
     // select content from the file viewer
@@ -452,6 +452,7 @@ const App = {
         if (data.ACTIVESESSION) return this.activeSession = true
         this.activeSession = false
 
+        localStorage.clear()
         window.location.replace(`/Security/SAML2/Login.aspx?redirectUrl=${encodeURIComponent(location.href)} `)
       })
     },
@@ -526,7 +527,7 @@ const App = {
         console.warn(`JSON parse error: ${e} `)
       }
 
-      return await this.fetchAPI(url, data, method);
+      return await this.fetchAPI(url, data, method)
     },
 
     // fetch a resource
@@ -561,7 +562,7 @@ const App = {
 
           return json
         })
-        .catch(e => console.warn(`fetch error: ${e} `))
+        .catch(e => console.warn(`fetch error: ${e}`))
     }
   }
 }
