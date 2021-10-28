@@ -8,7 +8,7 @@
 // @downloadURL   https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @updateURL     https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @supportURL    https://github.com/Mart-0/ELO/issues
-// @version       1.2.0
+// @version       1.2.1
 
 // @match         https://elo.windesheim.nl/*
 // @grant         none
@@ -118,12 +118,15 @@ const App = {
                 </div>
         
                 <!-- slideBar -->
-                <div :class="{'w-0' : !showSelectedCourse, 'w-3' : showSelectedCourse}" class="transition-all duration-300 flex items-center justify-center"
-                  style="cursor: col-resize" @mousedown="startSliding">
-                  <svg v-show="showSelectedCourse" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 overflow-visible text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-</svg>
-                  </div>
+                <div :class="{'w-0' : !showSelectedCourse, 'w-3' : showSelectedCourse}"
+                  class="transition-all duration-300 flex items-center justify-center" style="cursor: col-resize"
+                  @mousedown="startSliding">
+                  <svg v-show="showSelectedCourse" xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 overflow-visible text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                  </svg>
+                </div>
               </div>
             </div>
         
@@ -194,7 +197,7 @@ const App = {
       URLIds: [],
       mousePosition: { x: 0, y: 0 },
       isMouseDown: false,
-      currentOpenWidth: Number(localStorage.getItem('currentWidth')) || 300,
+      currentOpenWidth: Number(localStorage.getItem('currentWidth')) || 400,
       coursesBarWidth: 80,
       startWidth: 0,
       startMouse: 0,
@@ -292,7 +295,7 @@ const App = {
 
     // calculate the needed width for the courses bar
     calculateCoursesBarWidth() {
-      this.coursesBarWidth = 80;
+      this.coursesBarWidth = 80
 
       this.$nextTick(() => {
         this.coursesBarWidth = this.$refs.coursesBar ? this.$refs.coursesBar?.scrollWidth : 80
@@ -387,7 +390,7 @@ const App = {
         if (item.LEVEL === content.LEVEL) childerenReached = false
         if (item.ID === content.ID) childerenReached = true
         if (childerenReached === true) item.HIDECHILDEREN = true
-      });
+      })
     },
 
     // select content from the file viewer
@@ -470,6 +473,7 @@ const App = {
         if (data.ACTIVESESSION) return this.activeSession = true
         this.activeSession = false
 
+        localStorage.clear()
         window.location.replace(`/Security/SAML2/Login.aspx?redirectUrl=${encodeURIComponent(location.href)} `)
       })
     },
@@ -558,7 +562,7 @@ const App = {
         console.warn(`JSON parse error: ${e} `)
       }
 
-      return await this.fetchAPI(url, data, method);
+      return await this.fetchAPI(url, data, method)
     },
 
     // fetch a resource
@@ -593,7 +597,7 @@ const App = {
 
           return json
         })
-        .catch(e => console.warn(`fetch error: ${e} `))
+        .catch(e => console.warn(`fetch error: ${e}`))
     }
   }
 }
