@@ -8,7 +8,7 @@
 // @downloadURL   https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @updateURL     https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @supportURL    https://github.com/Mart-0/ELO/issues
-// @version       1.2.1
+// @version       1.2.2
 
 // @match         https://elo.windesheim.nl/*
 // @grant         none
@@ -731,6 +731,7 @@ const colorStrings = [
   'bg-red-600 text-red-100',
   'bg-red-600 text-red-100',
   'bg-yellow-600 text-yellow-100',
+  'bg-green-600 text-green-100',
   'bg-green-600 text-green-100',
   'bg-green-600 text-green-100',
   'bg-green-600 text-green-100',
