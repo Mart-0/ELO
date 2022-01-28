@@ -8,7 +8,7 @@
 // @downloadURL   https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @updateURL     https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @supportURL    https://github.com/Mart-0/ELO/issues
-// @version       1.2.2
+// @version       1.2.3
 
 // @match         https://elo.windesheim.nl/*
 // @grant         none
@@ -708,6 +708,9 @@ const abbreviations = {
   79482: 'C#',
   79506: 'HP', // DNM
   79505: 'HP', // NS
+  70645: 'ENG2',
+  78802: 'SEC',
+  58556: 'BE',
 }
 
 // icon list for the difrent file types
@@ -727,11 +730,11 @@ const icons = {
 // color stings for the diferent courses
 const colorStrings = [
   'bg-blue-600 text-blue-100',
+  'bg-blue-600 text-blue-100',
   'bg-pink-600 text-pink-100',
   'bg-red-600 text-red-100',
-  'bg-red-600 text-red-100',
   'bg-yellow-600 text-yellow-100',
-  'bg-green-600 text-green-100',
+  'bg-yellow-600 text-yellow-100',
   'bg-green-600 text-green-100',
   'bg-green-600 text-green-100',
   'bg-green-600 text-green-100',
