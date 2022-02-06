@@ -8,7 +8,7 @@
 // @downloadURL   https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @updateURL     https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @supportURL    https://github.com/Mart-0/ELO/issues
-// @version       1.3.0
+// @version       1.3.1
 
 // @match         https://elo.windesheim.nl/*
 // @grant         none
@@ -721,6 +721,7 @@ const abbreviations = {
   70645: 'ENG2',
   78802: 'SEC',
   58556: 'BE',
+  78801: 'ST',
 }
 
 // icon list for the difrent file types
