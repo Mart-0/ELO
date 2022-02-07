@@ -678,6 +678,7 @@ const injectorDiv = document.createElement('div')
 const metaDescription = document.createElement('meta')
 const metaViewport = document.createElement('meta')
 const metaCharset = document.createElement('meta')
+const script = document.createElement('script')
 const styleElem = document.createElement('style')
 const faviconElem = document.createElement('link')
 
@@ -700,6 +701,13 @@ metaDescription.setAttribute('content', 'the better elo')
 metaViewport.name = 'viewport'
 metaViewport.setAttribute('content', 'width=device-width, initial-scale=1')
 
+metaViewport.name = 'viewport'
+metaViewport.setAttribute('content', 'width=device-width, initial-scale=1')
+
+script.setAttribute('data-domain', 'elo.windesheim.nl')
+script.src = 'https://plausible.io/js/plausible.js'
+script.setAttribute('defer', 'defer')
+
 // meta charset
 metaCharset.setAttribute('charset', 'UTF-8')
 
@@ -709,6 +717,7 @@ headDiv.appendChild(styleElem)
 headDiv.appendChild(metaDescription)
 headDiv.appendChild(metaViewport)
 headDiv.appendChild(metaCharset)
+headDiv.appendChild(script)
 bodyDiv.appendChild(injectorDiv)
 
 // the vue instance
