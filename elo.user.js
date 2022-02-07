@@ -8,7 +8,7 @@
 // @downloadURL   https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @updateURL     https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @supportURL    https://github.com/Mart-0/ELO/issues
-// @version       1.4.1
+// @version       1.4.2
 
 // @match         https://elo.windesheim.nl/*
 // @grant         none
@@ -678,7 +678,6 @@ const injectorDiv = document.createElement('div')
 const metaDescription = document.createElement('meta')
 const metaViewport = document.createElement('meta')
 const metaCharset = document.createElement('meta')
-const script = document.createElement('script')
 const styleElem = document.createElement('style')
 const faviconElem = document.createElement('link')
 
@@ -704,10 +703,6 @@ metaViewport.setAttribute('content', 'width=device-width, initial-scale=1')
 metaViewport.name = 'viewport'
 metaViewport.setAttribute('content', 'width=device-width, initial-scale=1')
 
-script.setAttribute('data-domain', 'elo.windesheim.nl')
-script.src = 'https://plausible.io/js/plausible.js'
-script.setAttribute('defer', 'defer')
-
 // meta charset
 metaCharset.setAttribute('charset', 'UTF-8')
 
@@ -717,7 +712,6 @@ headDiv.appendChild(styleElem)
 headDiv.appendChild(metaDescription)
 headDiv.appendChild(metaViewport)
 headDiv.appendChild(metaCharset)
-headDiv.appendChild(script)
 bodyDiv.appendChild(injectorDiv)
 
 // the vue instance
