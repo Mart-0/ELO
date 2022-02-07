@@ -8,7 +8,7 @@
 // @downloadURL   https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @updateURL     https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @supportURL    https://github.com/Mart-0/ELO/issues
-// @version       1.4.2
+// @version       1.4.3
 
 // @match         https://elo.windesheim.nl/*
 // @grant         none
@@ -764,7 +764,7 @@ const icons = {
 // color stings for the diferent courses
 const colorStrings = [
   'bg-blue-600 text-blue-100',
-  'bg-blue-600 text-blue-100',
+  'bg-purple-600 text-purple-100',
   'bg-pink-600 text-pink-100',
   'bg-red-600 text-red-100',
   'bg-yellow-600 text-yellow-100',
