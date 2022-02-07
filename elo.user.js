@@ -8,7 +8,7 @@
 // @downloadURL   https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @updateURL     https://github.com/Mart-0/ELO/raw/master/elo.user.js
 // @supportURL    https://github.com/Mart-0/ELO/issues
-// @version       1.3.1
+// @version       1.4.0
 
 // @match         https://elo.windesheim.nl/*
 // @grant         none
@@ -98,7 +98,7 @@ const App = {
                     <div class="select-none" v-if="shownContent" v-for="content in shownContent" :key="content.ID">
                       <div class="cursor-pointer" @click="selectContent(selectedCourse, content)">
                         <div
-                          :class="[  content.LEVEL === 1 ? 'ml-2' : '', content.LEVEL === 2 ? 'ml-4' : '',content.LEVEL === 3 ? 'ml-6' : '']"
+                          :class="[content.LEVEL === 1 ? 'ml-2' : '', content.LEVEL === 2 ? 'ml-4' : '',content.LEVEL === 3 ? 'ml-6' : '']"
                           class="flex items-center justify-between p-2 rounded hover:bg-gray-300 hover-bg-gray-300">
                           <div class="flex justify-between items-center w-full">
                             <div class="overflow-hidden flex items-center">
@@ -172,8 +172,28 @@ const App = {
               <!-- main content -->
               <main class="flex h-full shadow-3xl-inner">
                 <div class="flex w-full" v-if="selectedContent">
-                  <span class="bg-white m-4 p-2 h-10 rounded" v-if="selectedContent?.TYPE === 'upload'">Inleveren word
-                    niet ondersteund</span>
+                  <div v-if="selectedContent?.TYPE === 'upload'" class="flex flex-col p-2 w-full overflow-hidden">
+                    <span class="bg-white m-2 p-2 h-10 rounded flex" v-if="selectedContent?.DETAILS?.ASSIGNMENT_DOCUMENT_URL">
+                      <b>Uitleg:</b>
+                      <a class="ml-2 truncate" target="_blank" :href="selectedContent?.DETAILS?.ASSIGNMENT_DOCUMENT_URL">{{ selectedContent?.DETAILS?.ASSIGNMENT_DOCUMENT_NAME }}</a>  
+                    </span>
+
+                    <span class="bg-white m-2 p-2 h-10 rounded flex" v-if="selectedContent?.DETAILS?.HANDIN_URL">
+                      <b>Ingeleverd:</b>
+                      <a class="ml-2 truncate" target="_blank" :href="selectedContent?.DETAILS?.HANDIN_URL">{{ selectedContent?.DETAILS?.HANDIN_NAME }}</a>  
+                    </span>
+
+                    <span class="bg-white m-2 p-2 h-10 rounded flex" v-if="selectedContent?.DETAILS?.REVIEW_URL">
+                      <b>Review: </b>
+                      <a class="ml-2 truncate" target="_blank" :href="selectedContent?.DETAILS?.REVIEW_URL">{{ selectedContent?.DETAILS?.REVIEW_NAME }}</a>  
+                    </span>
+
+                    <span class="bg-white m-2 p-2 h-10 rounded truncate">
+                      Inleveren word
+                      niet ondersteund, het downloaden van ingeleverde items wel.
+                    </span>
+                  </div>
+                  
                   <iframe title="content" class="bg-white" :class="{'pointer-events-none' : isMouseDown}"
                     v-if="selectedContent?.ITEMTYPE !== 9"
                     :src="'https://elo.windesheim.nl/Pages/StudyRouteSCOPlayer/StudyRouteSCOPlayer.aspx?FK_ID=' + selectedContent?.STUDYROUTE_ITEM_ID"
@@ -529,6 +549,7 @@ const App = {
 
         STUDYROUTE_CONTENT.forEach(c => c.LEVEL = level)
         STUDYROUTE_CONTENT.forEach(c => (c.ITEMTYPE === 0) && (c.HIDECHILDEREN = true))
+        STUDYROUTE_CONTENT.forEach(c => (c.ITEMTYPE === 9) && (this.getHandInBoxDetails(c)))
         STUDYROUTE_CONTENT.forEach(c => c.TYPE = this.getContentType(c))
 
         let content = [...course.CONTENT.slice(0, index + Math.min(level, 1)), ...STUDYROUTE_CONTENT, ...course.CONTENT]
@@ -536,15 +557,14 @@ const App = {
         course.CONTENT = this.removeDuplicateObjectFromArray(content)
       })
     },
-    // remove a cached items
-    removeCache(url = '', data = {}, method = 'GET') {
-      let URLWithPara = url
-
-      if (Object.entries(data).length > 0 && method === 'GET') URLWithPara += '?' + (new URLSearchParams(data)).toString()
-
-      localStorage.removeItem(URLWithPara)
+    // get all the details off the hand in box, itemtype 9
+    async getHandInBoxDetails(c) {
+      await this.cacheAPI('/services/Studyroutemobile.asmx/LoadUserHandinDetails', {
+        studyRouteResourceId: c.STUDYROUTE_RESOURCE_ID
+      }).then(({ STUDYROUTE_USER_HANDINDETAILS }) => {
+        c.DETAILS = STUDYROUTE_USER_HANDINDETAILS[0]
+      })
     },
-
     // same as fetchAPI but with a cache
     async cacheAPI(url = '', data = {}, method = 'GET') {
       let URLWithPara = url
